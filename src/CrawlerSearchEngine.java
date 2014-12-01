@@ -67,69 +67,81 @@ public class CrawlerSearchEngine extends JFrame {
 
         //setup search panel
         JPanel searchPanel = new JPanel();
-        GridBagConstraints contraints;
+        GridBagConstraints constraints;
         GridBagLayout layout = new GridBagLayout();
         searchPanel.setLayout(layout);
 
         JLabel startLB = new JLabel("Start URL : ");
-        contraints = new GridBagConstraints();
-        contraints.anchor = GridBagConstraints.EAST;
-        contraints.insets = new Insets(5, 5, 0 , 0); // same as border in css: top - right - bot - left size
-        layout.setConstraints(startLB, contraints);
+        constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets(5, 5, 0 , 0); // same as border in css: top - right - bot - left size
+        layout.setConstraints(startLB, constraints);
         searchPanel.add(startLB);
 
 
         startTF = new JTextField();
-        contraints = new GridBagConstraints();
+        constraints = new GridBagConstraints();
         //fill textfield with remain size
-        contraints.fill = GridBagConstraints.HORIZONTAL;
-        contraints.gridwidth = GridBagConstraints.REMAINDER;
-        contraints.insets = new Insets(5, 5, 0, 5);
-        layout.setConstraints(startLB, contraints);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.insets = new Insets(5, 5, 0, 5);
+        layout.setConstraints(startLB, constraints);
         searchPanel.add(startTF);
 
 
         JLabel maxLabel = new JLabel("Max URLs to crawl :");
-        contraints = new GridBagConstraints();
-        contraints.anchor = GridBagConstraints.EAST;
-        contraints.insets = new Insets(5, 5, 0, 0);
-        layout.setConstraints(limitCheckBox, contraints);
+        constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(limitCheckBox, constraints);
         searchPanel.add(maxLabel);
 
 
         maxComboBox = new JComboBox(URLS);
         maxComboBox.setEditable(true);
-        contraints = new GridBagConstraints();
-        contraints.insets = new Insets(5, 5, 0, 0);
-        layout.setConstraints(maxComboBox, contraints);
+        constraints = new GridBagConstraints();
+        constraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(maxComboBox, constraints);
         searchPanel.add(maxComboBox);
 
 
         limitCheckBox = new JCheckBox("Limit crawling to Start URL site :");
-        contraints = new GridBagConstraints();
-        contraints.anchor = GridBagConstraints.WEST;
-        contraints.insets = new Insets(0, 10, 0, 0);
-        layout.setConstraints(limitCheckBox, contraints);
+        constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.insets = new Insets(0, 10, 0, 0);
+        layout.setConstraints(limitCheckBox, constraints);
         searchPanel.add(limitCheckBox);
 
 
         JLabel blankLB = new JLabel();
-        contraints = new GridBagConstraints();
-        contraints.gridwidth = GridBagConstraints.REMAINDER;
-        layout.setConstraints(blankLB, contraints);
+        constraints = new GridBagConstraints();
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        layout.setConstraints(blankLB, constraints);
         searchPanel.add(blankLB);
 
 
         JLabel logLB = new JLabel("Matches Log File:");
-        contraints = new GridBagConstraints();
-        contraints.anchor = GridBagConstraints.EAST;
-        contraints.insets = new Insets(5, 5, 0, 0);
-        layout.setConstraints(logLB, contraints);
+        constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(logLB, constraints);
         searchPanel.add(logLB);
 
 
         String file = System.getProperty("user.dir") + System.getProperty("file.separator") + "crawler.log";
         logTF = new JTextField(file);
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.insets = new Insets(5, 5, 0, 5);
+        layout.setConstraints(logTF, constraints);
+        searchPanel.add(logTF);
+
+
+        JLabel searchLB = new JLabel("Search String:");
+        constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets(5, 5, 0, 0);
     }
 
     protected void actionExit(){
