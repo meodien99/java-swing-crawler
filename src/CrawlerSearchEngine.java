@@ -142,6 +142,110 @@ public class CrawlerSearchEngine extends JFrame {
         constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.EAST;
         constraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(searchLB, constraints);
+        searchPanel.add(searchLB);
+
+
+        searchTF = new JTextField();
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.insets = new Insets(5, 5, 0, 0);
+        constraints.gridwidth = 2;
+        constraints.weightx = 1.0d;
+        layout.setConstraints(searchTF, constraints);
+        searchPanel.add(searchTF);
+
+
+        caseCheckBox = new JCheckBox("Case Sensitive:");
+        constraints = new GridBagConstraints();
+        constraints.insets = new Insets(5, 5, 0, 5);
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        layout.setConstraints(caseCheckBox, constraints);
+        searchPanel.add(caseCheckBox);
+
+
+        searchButton = new JButton("Search :");
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                actionSearch();
+            }
+        });
+        constraints = new GridBagConstraints();
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.insets = new Insets(5, 5, 5, 5);
+        layout.setConstraints(searchButton, constraints);
+        searchPanel.add(searchButton);
+
+
+        JSeparator separator = new JSeparator();
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.insets = new Insets(5, 5, 5, 5);
+        layout.setConstraints(separator, constraints);
+        searchPanel.add(separator);
+
+
+        JLabel crawlingLB2 = new JLabel("Crawling : ");
+        constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(crawlingLB2, constraints);
+        searchPanel.add(crawlingLB2);
+
+
+        crawlingLB = new JLabel();
+        crawlingLB.setFont(crawlingLB.getFont().deriveFont(Font.PLAIN));
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.insets = new Insets(5, 5, 0, 5);
+        layout.setConstraints(crawlingLB, constraints);
+        searchPanel.add(crawlingLB);
+
+
+        JLabel crawledLB2 = new JLabel("Crawled URLs: ");
+        constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(crawledLB2, constraints);
+        searchPanel.add(crawledLB2);
+
+
+        crawledLB = new JLabel();
+        crawledLB.setFont(crawledLB.getFont().deriveFont(Font.PLAIN));
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.insets = new Insets(5, 5, 0, 5);
+        layout.setConstraints(crawledLB, constraints);
+        searchPanel.add(crawledLB);
+
+
+        JLabel toCrawlLB2 = new JLabel("URLs to Crawl:");
+        constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(toCrawlLB2, constraints);
+        searchPanel.add(toCrawlLB2);
+
+
+        toCrawlLB = new JLabel();
+        toCrawlLB.setFont(toCrawlLB.getFont().deriveFont(Font.PLAIN));
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.insets = new Insets(5, 5, 0, 5);
+        layout.setConstraints(toCrawlLB, constraints);
+        searchPanel.add(toCrawlLB);
+
+
+
+    }
+
+    private void actionSearch(){
+        //if stop button clicked turns crawling flag off
     }
 
     protected void actionExit(){
