@@ -89,7 +89,47 @@ public class CrawlerSearchEngine extends JFrame {
         searchPanel.add(startTF);
 
 
+        JLabel maxLabel = new JLabel("Max URLs to crawl :");
+        contraints = new GridBagConstraints();
+        contraints.anchor = GridBagConstraints.EAST;
+        contraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(limitCheckBox, contraints);
+        searchPanel.add(maxLabel);
 
+
+        maxComboBox = new JComboBox(URLS);
+        maxComboBox.setEditable(true);
+        contraints = new GridBagConstraints();
+        contraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(maxComboBox, contraints);
+        searchPanel.add(maxComboBox);
+
+
+        limitCheckBox = new JCheckBox("Limit crawling to Start URL site :");
+        contraints = new GridBagConstraints();
+        contraints.anchor = GridBagConstraints.WEST;
+        contraints.insets = new Insets(0, 10, 0, 0);
+        layout.setConstraints(limitCheckBox, contraints);
+        searchPanel.add(limitCheckBox);
+
+
+        JLabel blankLB = new JLabel();
+        contraints = new GridBagConstraints();
+        contraints.gridwidth = GridBagConstraints.REMAINDER;
+        layout.setConstraints(blankLB, contraints);
+        searchPanel.add(blankLB);
+
+
+        JLabel logLB = new JLabel("Matches Log File:");
+        contraints = new GridBagConstraints();
+        contraints.anchor = GridBagConstraints.EAST;
+        contraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(logLB, contraints);
+        searchPanel.add(logLB);
+
+
+        String file = System.getProperty("user.dir") + System.getProperty("file.separator") + "crawler.log";
+        logTF = new JTextField(file);
     }
 
     protected void actionExit(){
