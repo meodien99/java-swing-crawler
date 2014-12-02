@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -368,5 +370,83 @@ public class CrawlerSearchEngine extends JFrame {
         System.exit(0);
     }
 
-    
+    private void search(final String logFile, final String startURL, final int maxURLs, final String searchString){
+        //Start the Search in new Thread
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //Show hour glass cursor while crawling is under way
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+                //disable search control
+                startTF.setEnabled(false);
+                maxComboBox.setEnabled(false);
+                limitCheckBox.setEnabled(false);
+                logTF.setEnabled(false);
+                searchTF.setEnabled(false);
+                caseCheckBox.setEnabled(false);
+
+                //swtich search button to "STOP"
+                searchButton.setText("STOP");
+
+                //Reset stats
+                table.setModel(new DefaultTableModel(new Object[][]{}, new String[]{"URL"}){
+                    public boolean isCellEditable(int row, int column){
+                        return false;
+                    }
+                });
+                updateStats(startURL, 0, 0, maxURLs);
+
+                //Open matches Log File
+                try{
+                    logFileWriter = new PrintWriter(new FileWriter(logFile));
+                } catch(IOException e){
+                    showError("Unable to open matches Log File");
+                    return;
+                }
+
+                //turn crawling flag on
+                crawling = true;
+
+                //perform the actual crawling
+                crawl(startURL, maxURLs, limitCheckBox.isSelected(), searchString, caseCheckBox.isSelected());
+
+                //turn crawling flag off
+                crawling = false;
+
+                //close matches log file
+                try{
+                    logFileWriter.close();
+                }catch (Exception e){
+                    showError("Unable to close matches Log File");
+                    return;
+                }
+
+                //mark search as done
+                crawlingLB.setText("Done");
+
+                //Enable search control
+                startTF.setEnabled(true);
+                maxComboBox.setEnabled(true);
+                limitCheckBox.setEnabled(true);
+                logTF.setEnabled(true);
+                searchTF.setEnabled(true);
+                caseCheckBox.setEnabled(true);
+
+
+                //switch search button back to "search"
+                searchButton.setText("Search");
+
+                //return default Cursor
+                setCursor(Cursor.getDefaultCursor());
+
+                //Show message if search string is not found
+                if(table.getRowCount() == 0 ){
+                    JOptionPane.showMessageDialog(CrawlerSearchEngine.this, "Your search String is not found",
+                            "Search String not found",JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        thread.start();
+    }
 }
