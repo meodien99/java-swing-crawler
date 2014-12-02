@@ -456,7 +456,19 @@ public class CrawlerSearchEngine extends JFrame {
     }
 
     //update crawling stats
-    private void updateStats(){
-        
+    private void updateStats(String crawling, int crawled, int toCrawl, int maxUrls){
+        crawlingLB.setText(crawling);
+        crawlingLB.setText(" " + crawled);
+        crawlingLB.setText(" " + toCrawl);
+
+        //update progress bar
+        if(maxUrls == -1){
+            progressBar.setMaximum(crawled + toCrawl);
+        } else {
+            progressBar.setMaximum(maxUrls);
+        }
+        progressBar.setValue(crawled);
+
+        matchesLB.setText(" " + table.getRowCount());
     }
 }
