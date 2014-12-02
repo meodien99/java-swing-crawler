@@ -7,6 +7,8 @@ import java.awt.event.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -314,7 +316,7 @@ public class CrawlerSearchEngine extends JFrame {
         String startURL = startTF.getText().trim();
         if(startURL.length() < 1) {
             errorsList.add("Missing start URL");
-        } else if (verify(startURL) == null){
+        } else if (verifyURL(startURL) == null){
             errorsList.add("Invalid start URL");
         }
 
@@ -471,4 +473,38 @@ public class CrawlerSearchEngine extends JFrame {
 
         matchesLB.setText(" " + table.getRowCount());
     }
+
+    //add match to matches table and log file
+    private void addMatch(String url){
+        //Add URL to matches table
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.addRow(new Object[]{url});
+
+        //Add URL to matches log file
+        try{
+            logFileWriter.println(url);
+        } catch (Exception e){
+            showError("Unable to match log file");
+        }
+    }
+
+    //verify URL format
+    private URL verifyURL(String url){
+        //Only allow HTTP URL
+        if(!url.toLowerCase().startsWith("http://")){
+            return null;
+        }
+
+        //verify format URL
+        URL verifiedURL = null;
+        try{
+            verifiedURL = new URL(url);
+        }catch (MalformedURLException e){
+            return null;
+        }
+
+        return verifiedURL;
+    }
+
+    
 }
