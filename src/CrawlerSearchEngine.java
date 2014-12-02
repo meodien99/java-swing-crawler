@@ -449,4 +449,14 @@ public class CrawlerSearchEngine extends JFrame {
         });
         thread.start();
     }
+
+    //show dialog box if error
+    private void showError(String messages){
+        JOptionPane.showMessageDialog(this, messages, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    //update crawling stats
+    private void updateStats(){
+        
+    }
 }
