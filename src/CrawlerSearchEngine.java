@@ -4,9 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -504,6 +502,65 @@ public class CrawlerSearchEngine extends JFrame {
         }
 
         return verifiedURL;
+    }
+
+    //Check if robot is allowed to access the given URL
+    private boolean isRobotAllowed(URL urlToCheck){
+        String host = urlToCheck.getHost().toLowerCase();
+
+        //Retrieve host's disallow last form cache
+        ArrayList disallowList = (ArrayList) disallowListURLCache.get(host);
+
+        //if list is not in the cache, download and cache it
+        if(disallowList == null){
+            disallowList = new ArrayList();
+
+            try {
+                URL robotsFileURl = new URL("http://"+ urlToCheck);
+
+                //open connection to robot file URL for reading
+                BufferedReader reader = new BufferedReader(new InputStreamReader(robotsFileURl.openStream()));
+
+                //Read robot file, creating list or disallowed paths
+                String line;
+                while((line = reader.readLine()) != null){
+                    if(line.indexOf("Disallow:") == 0) {
+                        String disallowPath = line.substring("Disallow:".length());
+
+                        //check disallow path for comments and remove if present
+                        int commentIndex = disallowPath.indexOf("#");
+                        if(commentIndex != -1) {
+                            disallowPath = disallowPath.substring(0, commentIndex);
+                        }
+
+                        //remove leading of trailing spaces from disallow path
+                        disallowPath = disallowPath.trim();
+
+                        //add disallow path to list
+                        disallowList.add(disallowPath);
+                    }
+                }
+
+                //add new disallow list to cache
+                disallowListURLCache.put(host, disallowList);
+
+            } catch (Exception e){
+                //assume robot is allowed since an exception is thrown if the robot file doesn't exit
+                return true;
+            }
+        }
+
+        //Loop through disallow list to see if the crawling is allowed for given URL
+        String file = urlToCheck.getFile();
+        for(int i=0; i < disallowList.size(); i++){
+            String disallow = (String) disallowList.get(i);
+
+            if(file.startsWith(disallow)){
+                return  false;
+            }
+        }
+
+        return true;
     }
 
     
