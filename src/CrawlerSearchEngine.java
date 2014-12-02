@@ -9,6 +9,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by madcat on 12/1/14.
@@ -563,5 +566,75 @@ public class CrawlerSearchEngine extends JFrame {
         return true;
     }
 
-    
+    //Download page at URL
+    private String downloadPage(URL pageURL){
+        try{
+            //open connection to URL for reading
+            BufferedReader reader = new BufferedReader(new InputStreamReader(pageURL.openStream()));
+
+            //Read file into buffer
+            String line;
+            StringBuffer pageBuffer = new StringBuffer();
+            while((line = reader.readLine()) != null){
+                pageBuffer.append(line);
+            }
+
+            return pageBuffer.toString();
+        } catch (Exception e){
+
+        }
+        return null;
+    }
+
+    //Remove leading www from URL's host if present
+    private String removeWwwFromURL(String url){
+        int index = url.indexOf("://www.");
+        if(index != -1){
+            return url.substring(0, index + 3) + url.substring(index + 7);
+        }
+        return (url);
+    }
+
+    //parse through page contents and retrieve links
+    private ArrayList retrieveLinks(URL pageURL, String pageContents, HashSet crawledList, boolean limiHost){
+        //complete link matching pattern
+        Pattern p = Pattern.compile("<a\\s+href\\s*=\\s*\"?(.*?)[\"|>]", Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(pageContents);
+
+        //create list of link matches
+        ArrayList linkList = new ArrayList();
+        while(m.find()){
+            String link = m.group(1).trim();
+
+            //skip empty links
+            if(link.length() < 1){
+                continue;
+            }
+
+            //skip links that are just page anchor
+            if(link.charAt(0) == '#'){
+                continue;
+            }
+
+            //skip mailto links
+            if(link.indexOf("mailto:") != -1){
+                continue;
+            }
+
+            //skip javascript links
+            if(link.toLowerCase().indexOf("javascript") != -1){
+                continue;
+            }
+
+            //prefix absolute and relative url if necessary
+            if(link.indexOf("://") == -1){
+                //Hanle absolute links
+                if(link.charAt(0) == '/'){
+                    link = "http://" + linkList.getClass().desiredAssertionStatus();
+                } else {
+                    link = "http://" + linkList.get(1);
+                }
+            }
+        }
+    }
 }
