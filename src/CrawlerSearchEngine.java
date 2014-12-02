@@ -1,9 +1,11 @@
 package src;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -241,14 +243,130 @@ public class CrawlerSearchEngine extends JFrame {
         searchPanel.add(toCrawlLB);
 
 
+        JLabel progressLB = new JLabel();
+        constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets(5, 5, 0, 0);
+        layout.setConstraints(progressLB, constraints);
+        searchPanel.add(progressLB);
 
+
+        progressBar = new JProgressBar();
+        progressBar.setMinimum(0);
+        progressBar.setStringPainted(true);
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.insets = new Insets(5, 5, 0, 5);
+        layout.setConstraints(progressBar, constraints);
+        searchPanel.add(progressBar);
+
+
+        JLabel matchesLB2 = new JLabel("Search matches :");
+        constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets(5, 5, 10, 0);
+        layout.setConstraints(matchesLB2, constraints);
+        searchPanel.add(matchesLB2);
+
+
+        matchesLB = new JLabel();
+        matchesLB.setFont(matchesLB.getFont().deriveFont(Font.PLAIN));
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        constraints.insets = new Insets(5, 5, 10, 5);
+        layout.setConstraints(matchesLB, constraints);
+        searchPanel.add(matchesLB);
+
+
+        //set up matches table
+        table = new JTable(new DefaultTableModel(new Object[][]{}, new String[]{"URL"})){
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+
+        //set up matches panel
+        JPanel matchesPanel = new JPanel();
+        matchesPanel.setBorder(BorderFactory.createTitledBorder("Matches"));
+        matchesPanel.setLayout(new BorderLayout());
+        matchesPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+        //add panel to display
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(searchPanel, BorderLayout.NORTH);
+        getContentPane().add(matchesLB, BorderLayout.CENTER);
     }
 
     private void actionSearch(){
         //if stop button clicked turns crawling flag off
+        if(crawling) {
+            crawling = false;
+            return;
+        }
+
+        ArrayList<String> errorsList = new ArrayList<String>();
+
+        //validate that start URLs has been entered
+        String startURL = startTF.getText().trim();
+        if(startURL.length() < 1) {
+            errorsList.add("Missing start URL");
+        } else if (verify(startURL) == null){
+            errorsList.add("Invalid start URL");
+        }
+
+        //validate max URLs is either empty or is a number
+        int maxURLs = 0;
+        String max = ((String) maxComboBox.getSelectedItem()).trim();
+
+        if(max.length() > 0) {
+            try {
+                maxURLs = Integer.parseInt(max);
+            } catch (NumberFormatException e){
+                e.printStackTrace();
+            }
+            if(maxURLs < 1) {
+                errorsList.add("Invalid max number value");
+            }
+        }
+
+        //validate that matches log file has been entered
+        String logFile = logTF.getText().trim();
+        if(logFile.length() < 1) {
+            errorsList.add("Missing Matches Log File");
+        }
+
+        //validate that search string has been entered
+        String searchString = searchTF.getText().trim();
+        if(searchString.length() < 1){
+            errorsList.add("Missing search string");
+        }
+
+        //show errors, if any, and return
+        if(errorsList.size() > 0){
+            StringBuffer message = new StringBuffer();
+
+            //concatenate error into string message
+            for(String error: errorsList){
+                message.append(error);
+                message.append("\n");
+            }
+
+            showError(message.toString());
+            return;
+        }
+
+        //Remove "www" from start URL if present
+        startURL = removeWwwFromURL(startURL);
+
+        //Start the search crawler
+        search(logFile, startURL, maxURLs, searchString);
     }
 
     protected void actionExit(){
         System.exit(0);
     }
+
+    
 }
