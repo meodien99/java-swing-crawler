@@ -670,4 +670,31 @@ public class CrawlerSearchEngine extends JFrame {
 
         return (linkList);
     }
+
+    // determine whether or not search string is matched in the given page content
+    private boolean searchStringMatches(String pageContents, String searchString, boolean caseSensitive){
+        String searchContents = pageContents;
+
+        //if case sensitive search, low sensitive page contents for comparsion
+        if(!caseSensitive) {
+            searchContents = pageContents.toLowerCase();
+        }
+
+        //split search string to individual term
+        Pattern p = Pattern.compile("[\\s]+");
+        String[] terms = p.split(searchString);
+
+        //check to see if each terms matches
+        for(int i = 0; i < terms.length; i++){
+            if(caseSensitive){
+                if(searchContents.indexOf(terms[i]) == -1)
+                    return false;
+            } else {
+                if(searchContents.indexOf(terms[i].toLowerCase()) == -1)
+                    return false;
+            }
+        }
+
+        return true;
+    }
 }
