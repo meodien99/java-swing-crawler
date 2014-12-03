@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +48,7 @@ public class CrawlerSearchEngine extends JFrame {
         setTitle("Crawler Search Engine");
 
         //set window size
-        setSize(600, 600);
+        setSize(800, 800);
 
         //Handle window closing events
         addWindowListener(new WindowAdapter() {
@@ -92,7 +93,7 @@ public class CrawlerSearchEngine extends JFrame {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.insets = new Insets(5, 5, 0, 5);
-        layout.setConstraints(startLB, constraints);
+        layout.setConstraints(startTF, constraints);
         searchPanel.add(startTF);
 
 
@@ -100,7 +101,7 @@ public class CrawlerSearchEngine extends JFrame {
         constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.EAST;
         constraints.insets = new Insets(5, 5, 0, 0);
-        layout.setConstraints(limitCheckBox, constraints);
+        layout.setConstraints(maxLabel, constraints);
         searchPanel.add(maxLabel);
 
 
@@ -301,7 +302,7 @@ public class CrawlerSearchEngine extends JFrame {
         //add panel to display
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(searchPanel, BorderLayout.NORTH);
-        getContentPane().add(matchesLB, BorderLayout.CENTER);
+        getContentPane().add(matchesPanel, BorderLayout.CENTER);
     }
 
     private void actionSearch(){
@@ -696,5 +697,67 @@ public class CrawlerSearchEngine extends JFrame {
         }
 
         return true;
+    }
+
+    public void crawl(String startURL, int maxURLs, boolean limitHost, String searchString, boolean caseSensitive){
+        //setup crawl list
+        HashSet crawledList = new HashSet();
+        LinkedHashSet toCrawlList = new LinkedHashSet();
+
+        toCrawlList.add(startURL);
+
+        //perform actual crawling by looping through the to crawl list
+        while( crawling && toCrawlList.size() > 0){
+            //check to see if max URL count has been reached, if it was specified
+            if( maxURLs != -1){
+                if(crawledList.size() == maxURLs){
+                    break;
+                }
+            }
+
+            //get URL a bottom of the list
+            String url = (String) toCrawlList.iterator().next();
+
+            //remove URL from crawl List
+            toCrawlList.remove(url);
+
+            // convert string url to URL object
+            URL verifiedURL = verifyURL(url);
+
+            // skip URL if robots are not allowed to access it
+            if(!isRobotAllowed(verifiedURL)){
+                continue;
+            }
+
+            //Update crawling stats
+            updateStats(url, crawledList.size(), toCrawlList.size(), maxURLs);
+
+            //add page to crawledList
+            crawledList.add(url);
+
+            //download the page at given URL
+            String pageContents = downloadPage(verifiedURL);
+
+            //If the page was downloaded successfully, retrieve full all of its links and then see if it contains search string
+            if(pageContents != null && pageContents.length() > 0){
+                ArrayList links = retrieveLinks(verifiedURL, pageContents, crawledList, limitHost);
+
+                //add links to the toCrawlList
+                toCrawlList.addAll(links);
+
+                //check if search string is present in page and if so record and match
+                if(searchStringMatches(pageContents, searchString, caseSensitive)){
+                    addMatch(url);
+                }
+            }
+
+            //update crawling stats
+            updateStats(url, crawledList.size(), toCrawlList.size(), maxURLs);
+        }
+    }
+
+    public static void main(String[] args){
+        CrawlerSearchEngine crawler = new CrawlerSearchEngine();
+        crawler.setVisible(true);
     }
 }
