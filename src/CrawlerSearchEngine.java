@@ -596,7 +596,7 @@ public class CrawlerSearchEngine extends JFrame {
     }
 
     //parse through page contents and retrieve links
-    private ArrayList retrieveLinks(URL pageURL, String pageContents, HashSet crawledList, boolean limiHost){
+    private ArrayList retrieveLinks(URL pageURL, String pageContents, HashSet crawledList, boolean limitHost){
         //complete link matching pattern
         Pattern p = Pattern.compile("<a\\s+href\\s*=\\s*\"?(.*?)[\"|>]", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(pageContents);
@@ -628,13 +628,46 @@ public class CrawlerSearchEngine extends JFrame {
 
             //prefix absolute and relative url if necessary
             if(link.indexOf("://") == -1){
+                String file = pageURL.getFile();
                 //Hanle absolute links
                 if(link.charAt(0) == '/'){
-                    link = "http://" + linkList.getClass().desiredAssertionStatus();
+                    link = "http://" + pageURL.getHost() + "/" + link;
                 } else {
-                    link = "http://" + linkList.get(1);
+                    String path = file.substring(0, file.lastIndexOf('/') + 1);
+                    link = "http://" + pageURL.getHost() + path + link;
                 }
             }
+
+            //remove anchors from link
+            int index = link.indexOf('#');
+            if(index != -1){
+                link = link.substring(0, index);
+            }
+
+            //remove leading www. from URL's host if present
+            link = removeWwwFromURL(link);
+
+            //verify link and skip if invalid
+            URL verifiedLink = verifyURL(link);
+
+            if(verifiedLink == null) {
+                continue;
+            }
+
+            //if specified, limit links to those having the same host as the start URL
+            if( limitHost && !pageURL.getHost().toLowerCase().equals(verifiedLink.getHost().toLowerCase())){
+                continue;
+            }
+
+            //skip link if it has already crawled
+            if(crawledList.contains(link)){
+                continue;
+            }
+
+            //add link to list
+            linkList.add(link);
         }
+
+        return (linkList);
     }
 }
